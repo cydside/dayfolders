@@ -36,10 +36,10 @@ It crates folders as follow:
 ```
 you can run `dayfolders -from=2017-02-01 -days=14 -one` to get the same.  
 
-* `dayfolders -to=2017-03-31 -days=10 -one`   
+* `dayfolders -to=2017-03-31 -days=10 -one -doy`   
 It crates 10 folders as follow:  
 ```
-2017-03-22  
-...  
-2017-03-31
+2017-03-22 081
+...
+2017-03-31 090
 ```
