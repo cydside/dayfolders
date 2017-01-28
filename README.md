@@ -1,5 +1,5 @@
 # dayfolders
-The program creates daily folders to store files in a selectable period of time.
+It's a command line tool that creates daily folders to store files in a selectable period of time.
 
 ## Examples:
 
