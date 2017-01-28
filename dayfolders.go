@@ -1,3 +1,21 @@
+// dayfolders is a command line tool that creates daily folders to store files in a selectable period of time.
+// Copyright (C) 2017  Danilo Cicerone
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+//------------------------------------------------------------------------------
+
 package main
 
 //------------------------------------------------------------------------------
@@ -11,13 +29,14 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 )
 
 //------------------------------------------------------------------------------
 
 var yearPtr, fromPtr, toPtr, pathPtr string
-var onefPtr, subfPtr, dowPtr bool
+var onefPtr, subfPtr, dowPtr, doyPtr bool
 var daysPtr int
 var dateStart, dateEnd time.Time
 var out io.Writer = ioutil.Discard
@@ -31,7 +50,7 @@ func main() {
 	flag.Usage = func() {
 		fmt.Printf("Usage: dayfolders [-year YYYY] [-from YYYY-MM-DD] " +
 			"[-to YYYY-MM-DD] [-path /your/target/dir/] [-days 1 to 366] " +
-			"[-sub] [-one] [-dow]\n\n")
+			"[-sub] [-one] [-dow] [-doy]\n\n")
 		flag.PrintDefaults()
 	}
 
@@ -57,6 +76,8 @@ func main() {
 
 	flag.BoolVar(&dowPtr, "dow", false, "Adds short names of the day.")
 
+	flag.BoolVar(&doyPtr, "doy", false, "Adds day of the year.")
+
 	// Verify that a subcommand has been provided
 	// os.Arg[0] is the main command
 	// os.Arg[1] will be the subcommand
@@ -76,6 +97,7 @@ func main() {
 	fmt.Fprintln(out, "toPtr: ", toPtr)
 	fmt.Fprintln(out, "daysPtr: ", daysPtr)
 	fmt.Fprintln(out, "dowPtr: ", dowPtr)
+	fmt.Fprintln(out, "doyPtr: ", doyPtr)
 	fmt.Fprintln(out, "onefPtr: ", onefPtr)
 	fmt.Fprintln(out, "subfPtr: ", subfPtr)
 	fmt.Fprintln(out, "pathPtr (before Abs): ", pathPtr)
@@ -207,6 +229,7 @@ func validatePeriod() error {
 
 func createFolders() error {
 
+	dayOfYear := ""
 	dateCursor := dateStart
 	yearFormat := "2006"
 	monthFormat := "01"
@@ -218,16 +241,20 @@ func createFolders() error {
 	}
 
 	for dateCursor.Before(dateEnd) || dateCursor.Equal(dateEnd) {
+		if doyPtr {
+			dayOfYear = fmt.Sprintf("%03d", dateCursor.YearDay())
+		}
+
 		if (!onefPtr && !subfPtr) || subfPtr {
 			err := os.MkdirAll(
 				filepath.Join(
 					pathPtr,
 					dateCursor.Format(yearFormat),
 					dateCursor.Format(monthFormat),
-					dateCursor.Format(dayFormat+shortDayNameFormat),
-				),
-				os.ModePerm,
-			)
+					strings.TrimSpace(
+						dateCursor.Format(dayFormat+
+							shortDayNameFormat)+" "+dayOfYear),
+				), os.ModePerm)
 
 			if err != nil {
 				return err
@@ -235,7 +262,9 @@ func createFolders() error {
 		} else {
 			err := os.Mkdir(filepath.Join(
 				pathPtr,
-				dateCursor.Format("2006-01-02"+shortDayNameFormat),
+				strings.TrimSpace(
+					dateCursor.Format("2006-01-02"+shortDayNameFormat)+
+						" "+dayOfYear),
 			), os.ModePerm)
 
 			if err != nil {
