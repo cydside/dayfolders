@@ -37,7 +37,7 @@ It crates folders as follow:
 you can run `dayfolders -from=2017-02-01 -days=14 -one` to get the same.  
 
 * `dayfolders -to=2017-03-31 -days=10 -one -doy`   
-It crates 10 folders as follow:  
+It crates 10 folders adding day of the year as follow:  
 ```
 2017-03-22 081
 ...
