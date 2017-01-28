@@ -28,6 +28,13 @@ const debugModeActivated = false
 
 func main() {
 
+	flag.Usage = func() {
+		fmt.Printf("Usage: dayfolders [-year YYYY] [-from YYYY-MM-DD] " +
+			"[-to YYYY-MM-DD] [-path /your/target/dir/] [-days 1 to 366] " +
+			"[-sub] [-one] [-dow]\n\n")
+		flag.PrintDefaults()
+	}
+
 	flag.StringVar(&yearPtr, "year", "", "Creates folders for each day of "+
 		"the requested year.")
 
@@ -54,7 +61,7 @@ func main() {
 	// os.Arg[0] is the main command
 	// os.Arg[1] will be the subcommand
 	if len(os.Args) < 2 {
-		flag.PrintDefaults()
+		flag.Usage()
 		os.Exit(0)
 	}
 
