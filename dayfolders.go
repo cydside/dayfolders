@@ -196,6 +196,10 @@ func validatePeriod() error {
 		}
 	}
 
+	if dateEnd.Before(dateStart) {
+		return errors.New("Starting date is after the final. Goodbye!")
+	}
+
 	return nil
 }
 
