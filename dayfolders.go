@@ -50,8 +50,12 @@ func main() {
 	flag.Usage = func() {
 		fmt.Printf("Usage: dayfolders [-year YYYY] [-from YYYY-MM-DD] " +
 			"[-to YYYY-MM-DD] [-path /your/target/dir/] [-days 1 to 366] " +
-			"[-sub] [-one] [-dow] [-doy]\n\n")
+			"[-sub] [-one] [-dow] [-doy]\n\nOptions:\n")
 		flag.PrintDefaults()
+		fmt.Printf("\nCopyright (C) 2017 Danilo Cicerone.\n" +
+			"This is free software; see the source for copying conditions. "+
+			"There is NO warranty; not even for MERCHANTABILITY or FITNESS "+
+			"FOR A PARTICULAR PURPOSE.\n")
 	}
 
 	flag.StringVar(&yearPtr, "year", "", "Creates folders for each day of "+
