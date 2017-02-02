@@ -6,16 +6,19 @@ It's a command line tool that creates daily folders to store files in a selectab
 * `dayfolders -year=2017`  
 It crates a default folders tree:  
 ```
-2017  
-  -> 01  
-     -> 01  
-     -> 02  
-     ...  
-     -> 31  
-  ...  
-  -> 12  
-     ...  
-     -> 31  
+.
+├── 2017
+│   ├── 01
+...
+│   ├── 02
+│   │   ├── 01
+│   │   ├── 02
+...
+│   │   └── 31
+...
+│   ├── 12
+│   │   ├── 01
+...
 ```
 
 * `dayfolders -year=2017 -one -dow`  
