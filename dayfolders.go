@@ -110,6 +110,11 @@ func main() {
     fmt.Fprintln(out, "subfPtr: ", subfPtr)
     fmt.Fprintln(out, "pathPtr (before Abs): ", pathPtr)
 
+    if verPtr {
+        fmt.Println("Version 1.0.3")
+        os.Exit(0)
+    }
+
     if err := validateFlags(); err != nil {
         fmt.Println(err)
         os.Exit(1)
@@ -136,10 +141,6 @@ func main() {
 func validateFlags() error {
 
     var errPeriod error = errors.New("Ambiguous period. Goodbye!")
-
-    if verPtr {
-        return errors.New("Version 1.0.3")
-    }
 
     if yearPtr == "" && fromPtr == "" && toPtr == "" {
         return errPeriod
