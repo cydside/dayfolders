@@ -35,6 +35,68 @@ import (
 
 //------------------------------------------------------------------------------
 
+type Locale string
+
+type Format uint8
+
+const (
+    short Format = iota
+    long
+)
+
+const (
+    Sunday time.Weekday = iota
+    Monday
+    Tuesday
+    Wednesday
+    Thursday
+    Friday
+    Saturday
+)
+
+var DayNames = map[Locale]map[Format]map[time.Weekday]string{
+    "en_US": {
+        short: {
+            Sunday: "Sun",
+            Monday: "Mon",
+            Tuesday: "Tue",
+            Wednesday: "Wed",
+            Thursday: "Thu",
+            Friday: "Fri",
+            Saturday: "Sat",
+        },
+        long: {
+            Sunday: "Sunday",
+            Monday: "Monday",
+            Tuesday: "Tuesday",
+            Wednesday: "Wednesday",
+            Thursday: "Thursday",
+            Friday: "Friday",
+            Saturday: "Saturday",
+        },
+    },
+    "it_IT": {
+        short: {
+            Sunday: "Dom",
+            Monday: "Lun",
+            Tuesday: "Mar",
+            Wednesday: "Mer",
+            Thursday: "Gio",
+            Friday: "Ven",
+            Saturday: "Sab",
+        },
+        long: {
+            Sunday: "Domenica",
+            Monday: "Lunedì",
+            Tuesday: "Martedì",
+            Wednesday: "Mercoledì",
+            Thursday: "Giovedì",
+            Friday: "Venerdì",
+            Saturday: "Sabato",
+        },
+    },
+}
+
 var yearPtr, fromPtr, toPtr, pathPtr string
 var onefPtr, subfPtr, dowPtr, doyPtr, verPtr bool
 var daysPtr int
@@ -71,7 +133,7 @@ func main() {
         "will be created.")
 
     flag.BoolVar(&onefPtr, "one", false, "A long forlder name per "+
-    	"day(eg: 2017-01-22).")
+        "day(eg: 2017-01-22).")
 
     flag.BoolVar(&subfPtr, "sub", false, "A forlder for the year, subfolders "+
         "for the months and subfolders for the days(default).")
@@ -111,7 +173,7 @@ func main() {
     fmt.Fprintln(out, "pathPtr (before Abs): ", pathPtr)
 
     if verPtr {
-        fmt.Println("Version 1.0.3")
+        fmt.Println("Version 1.1.0")
         os.Exit(0)
     }
 
@@ -247,15 +309,15 @@ func createFolders() error {
     yearFormat := "2006"
     monthFormat := "01"
     dayFormat := "02"
-    shortDayNameFormat := ""
-
-    if dowPtr {
-        shortDayNameFormat = " (Mon)"
-    }
+    shortDayName := ""
 
     for dateCursor.Before(dateEnd) || dateCursor.Equal(dateEnd) {
         if doyPtr {
-            dayOfYear = fmt.Sprintf("%03d", dateCursor.YearDay())
+            dayOfYear = fmt.Sprintf(" %03d", dateCursor.YearDay())
+        }
+
+        if dowPtr {
+            shortDayName = fmt.Sprintf(" (%s)", DayNames["en_US"][short][dateCursor.Weekday()])
         }
 
         if (!onefPtr && !subfPtr) || subfPtr {
@@ -265,8 +327,9 @@ func createFolders() error {
                     dateCursor.Format(yearFormat),
                     dateCursor.Format(monthFormat),
                     strings.TrimSpace(
-                        dateCursor.Format(dayFormat+
-                            shortDayNameFormat)+" "+dayOfYear),
+                        dateCursor.Format(dayFormat)+
+                            shortDayName+
+                            dayOfYear),
                 ), os.ModePerm)
 
             if err != nil {
@@ -276,8 +339,9 @@ func createFolders() error {
             err := os.Mkdir(filepath.Join(
                 pathPtr,
                 strings.TrimSpace(
-                    dateCursor.Format("2006-01-02"+shortDayNameFormat)+
-                        " "+dayOfYear),
+                    dateCursor.Format("2006-01-02")+
+                        shortDayName+
+                        dayOfYear),
             ), os.ModePerm)
 
             if err != nil {
