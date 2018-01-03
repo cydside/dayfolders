@@ -1,5 +1,5 @@
 // dayfolders is a command line tool that creates daily folders to store files in a selectable period of time.
-// Copyright (C) 2017  Danilo Cicerone
+// Copyright (C) 2017-2018  Danilo Cicerone
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -192,7 +192,7 @@ func main() {
 			"[-to YYYY-MM-DD] [-path /your/target/dir/] [-days 1 to 366] " +
 			"[-sub] [-one] [-dow] [-doy] [-ver]\n\nOptions:\n")
 		flag.PrintDefaults()
-		fmt.Printf("\nCopyright (C) 2018 Danilo Cicerone.\n" +
+		fmt.Printf("\nCopyright (C) 2017-2018 Danilo Cicerone.\n" +
 			"This is free software; see the source for copying conditions. "+
 			"There is NO warranty; not even for MERCHANTABILITY or FITNESS "+
 			"FOR A PARTICULAR PURPOSE.\n")
