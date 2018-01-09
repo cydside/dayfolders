@@ -42,6 +42,7 @@ type Format uint8
 const (
 	short Format = iota
 	long
+	noname
 )
 
 const (
@@ -335,7 +336,7 @@ func validateFlags() error {
 		case 2:
 			fdn = long
 		default:
-			fdn = 5
+			fdn = noname
 		}
 	}
 
@@ -348,7 +349,7 @@ func validateFlags() error {
 		case 2:
 			fmn = long
 		default:
-			fmn = 5
+			fmn = noname
 		}
 	}
 
