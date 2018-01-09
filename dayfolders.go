@@ -175,6 +175,10 @@ var MonthNames = map[Locale]map[Format]map[time.Month]string{
 	},
 }
 
+var lc Locale  // Locale Code
+var fmn Format // Short or Long month's name
+var fdn Format // Short or Long day's name
+
 var yearPtr, fromPtr, toPtr, pathPtr string
 var onefPtr, subfPtr, doyPtr, verPtr bool
 var daysPtr, dowPtr, domPtr int
@@ -254,6 +258,7 @@ func main() {
 	fmt.Fprintln(out, "onefPtr: ", onefPtr)
 	fmt.Fprintln(out, "subfPtr: ", subfPtr)
 	fmt.Fprintln(out, "pathPtr (before Abs): ", pathPtr)
+	lc = "it_IT"
 
 	if verPtr {
 		fmt.Println("Version 1.1.0")
@@ -319,6 +324,32 @@ func validateFlags() error {
 
 	if daysPtr < 0 || daysPtr > 366 {
 		return errors.New("Days between 1 and 366. Goodbye!")
+	}
+
+	if dowPtr < 0 || dowPtr > 2 {
+		return errors.New("Ambiguous format for day's name. Goodbye!")
+	} else {
+		switch dowPtr {
+		case 1:
+			fdn = short
+		case 2:
+			fdn = long
+		default:
+			fdn = 5
+		}
+	}
+
+	if domPtr < 0 || domPtr > 2 {
+		return errors.New("Ambiguous format for month's name. Goodbye!")
+	} else {
+		switch domPtr {
+		case 1:
+			fmn = short
+		case 2:
+			fmn = long
+		default:
+			fmn = 5
+		}
 	}
 
 	return nil
@@ -397,32 +428,19 @@ func deleteEmpty(s []string) []string {
 //------------------------------------------------------------------------------
 
 func createFolders() error {
-	dayOfYear := ""
+	var dayOfYear, dayName, monthName string
 	dateCursor := dateStart
 	yearFormat := "2006"
 	monthFormat := "01"
 	dayFormat := "02"
-	dayName := ""
-	monthName := ""
 
 	for dateCursor.Before(dateEnd) || dateCursor.Equal(dateEnd) {
 		if doyPtr {
 			dayOfYear = fmt.Sprintf("%03d", dateCursor.YearDay())
 		}
 
-		switch dowPtr {
-		case 1:
-			dayName = fmt.Sprintf("%s", DayNames["it_IT"][short][dateCursor.Weekday()])
-		case 2:
-			dayName = fmt.Sprintf("%s", DayNames["it_IT"][long][dateCursor.Weekday()])
-		}
-
-		switch domPtr {
-		case 1:
-			monthName = fmt.Sprintf("%s", MonthNames["it_IT"][short][dateCursor.Month()])
-		case 2:
-			monthName = fmt.Sprintf("%s", MonthNames["it_IT"][long][dateCursor.Month()])
-		}
+		dayName = fmt.Sprintf("%s", DayNames[lc][fdn][dateCursor.Weekday()])
+		monthName = fmt.Sprintf("%s", MonthNames[lc][fmn][dateCursor.Month()])
 
 		if (!onefPtr && !subfPtr) || subfPtr {
 			s := []string{dayOfYear, dateCursor.Format(dayFormat), dayName}
