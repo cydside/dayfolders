@@ -1,6 +1,8 @@
 # dayfolders
 It's a command line tool that creates daily folders to store files in a selectable period of time.
 
+You can add your language support, quick and easy, have a look at the source code. Enjoy!
+
 ## Usage examples:
 
 * `dayfolders -year=2017`  
