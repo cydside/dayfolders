@@ -24,7 +24,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -35,163 +34,162 @@ import (
 
 //------------------------------------------------------------------------------
 
-type Locale string
+type locale string
 
-type Format uint8
+type nameAbbr uint8
 
 const (
-	short Format = iota
+	short nameAbbr = iota
 	long
 	noname
 )
 
 const (
-	Sunday time.Weekday = iota
-	Monday
-	Tuesday
-	Wednesday
-	Thursday
-	Friday
-	Saturday
+	sunday time.Weekday = iota
+	monday
+	tuesday
+	wednesday
+	thursday
+	friday
+	saturday
 )
 
 const (
-	January time.Month = 1 + iota
-	February
-	March
-	April
-	May
-	June
-	July
-	August
-	September
-	October
-	November
-	December
+	january time.Month = 1 + iota
+	february
+	march
+	april
+	may
+	june
+	july
+	august
+	september
+	october
+	november
+	december
 )
 
-var DayNames = map[Locale]map[Format]map[time.Weekday]string{
+var daynames = map[locale]map[nameAbbr]map[time.Weekday]string{
 	"en_US": {
 		short: {
-			Sunday:    "Sun",
-			Monday:    "Mon",
-			Tuesday:   "Tue",
-			Wednesday: "Wed",
-			Thursday:  "Thu",
-			Friday:    "Fri",
-			Saturday:  "Sat",
+			sunday:    "Sun",
+			monday:    "Mon",
+			tuesday:   "Tue",
+			wednesday: "Wed",
+			thursday:  "Thu",
+			friday:    "Fri",
+			saturday:  "Sat",
 		},
 		long: {
-			Sunday:    "Sunday",
-			Monday:    "Monday",
-			Tuesday:   "Tuesday",
-			Wednesday: "Wednesday",
-			Thursday:  "Thursday",
-			Friday:    "Friday",
-			Saturday:  "Saturday",
+			sunday:    "Sunday",
+			monday:    "Monday",
+			tuesday:   "Tuesday",
+			wednesday: "Wednesday",
+			thursday:  "Thursday",
+			friday:    "Friday",
+			saturday:  "Saturday",
 		},
 	},
 	"it_IT": {
 		short: {
-			Sunday:    "Dom",
-			Monday:    "Lun",
-			Tuesday:   "Mar",
-			Wednesday: "Mer",
-			Thursday:  "Gio",
-			Friday:    "Ven",
-			Saturday:  "Sab",
+			sunday:    "Dom",
+			monday:    "Lun",
+			tuesday:   "Mar",
+			wednesday: "Mer",
+			thursday:  "Gio",
+			friday:    "Ven",
+			saturday:  "Sab",
 		},
 		long: {
-			Sunday:    "Domenica",
-			Monday:    "Lunedì",
-			Tuesday:   "Martedì",
-			Wednesday: "Mercoledì",
-			Thursday:  "Giovedì",
-			Friday:    "Venerdì",
-			Saturday:  "Sabato",
+			sunday:    "Domenica",
+			monday:    "Lunedì",
+			tuesday:   "Martedì",
+			wednesday: "Mercoledì",
+			thursday:  "Giovedì",
+			friday:    "Venerdì",
+			saturday:  "Sabato",
 		},
 	},
 }
 
-var MonthNames = map[Locale]map[Format]map[time.Month]string{
+var monthNames = map[locale]map[nameAbbr]map[time.Month]string{
 	"en_US": {
 		short: {
-			January:   "Jan",
-			February:  "Feb",
-			March:     "Mar",
-			April:     "Apr",
-			May:       "May",
-			June:      "Jun",
-			July:      "Jul",
-			August:    "Aug",
-			September: "Sep",
-			October:   "Oct",
-			November:  "Nov",
-			December:  "Dec",
+			january:   "Jan",
+			february:  "Feb",
+			march:     "Mar",
+			april:     "Apr",
+			may:       "May",
+			june:      "Jun",
+			july:      "Jul",
+			august:    "Aug",
+			september: "Sep",
+			october:   "Oct",
+			november:  "Nov",
+			december:  "Dec",
 		},
 		long: {
-			January:   "January",
-			February:  "February",
-			March:     "March",
-			April:     "April",
-			May:       "May",
-			June:      "June",
-			July:      "July",
-			August:    "August",
-			September: "September",
-			October:   "October",
-			November:  "November",
-			December:  "December",
+			january:   "January",
+			february:  "February",
+			march:     "March",
+			april:     "April",
+			may:       "May",
+			june:      "June",
+			july:      "July",
+			august:    "August",
+			september: "September",
+			october:   "October",
+			november:  "November",
+			december:  "December",
 		},
 	},
 	"it_IT": {
 		short: {
-			January:   "Gen",
-			February:  "Feb",
-			March:     "Mar",
-			April:     "Apr",
-			May:       "Mag",
-			June:      "Giu",
-			July:      "Lug",
-			August:    "Aug",
-			September: "Set",
-			October:   "Ott",
-			November:  "Nov",
-			December:  "Dic",
+			january:   "Gen",
+			february:  "Feb",
+			march:     "Mar",
+			april:     "Apr",
+			may:       "Mag",
+			june:      "Giu",
+			july:      "Lug",
+			august:    "Aug",
+			september: "Set",
+			october:   "Ott",
+			november:  "Nov",
+			december:  "Dic",
 		},
 		long: {
-			January:   "Gennaio",
-			February:  "Febbraio",
-			March:     "Marzo",
-			April:     "Aprile",
-			May:       "Maggio",
-			June:      "Giugno",
-			July:      "Luglio",
-			August:    "Agosto",
-			September: "Settembre",
-			October:   "Ottobre",
-			November:  "Novembre",
-			December:  "Dicembre",
+			january:   "Gennaio",
+			february:  "Febbraio",
+			march:     "Marzo",
+			april:     "Aprile",
+			may:       "Maggio",
+			june:      "Giugno",
+			july:      "Luglio",
+			august:    "Agosto",
+			september: "Settembre",
+			october:   "Ottobre",
+			november:  "Novembre",
+			december:  "Dicembre",
 		},
 	},
 }
 
-var lc Locale  // Locale Code
-var fmn Format // Short or Long month's name
-var fdn Format // Short or Long day's name
+var lc locale    // locale Code
+var fmn nameAbbr // Short or Long month's name
+var fdn nameAbbr // Short or Long day's name
 
-var yearPtr, fromPtr, toPtr, pathPtr string
+var yearPtr, fromPtr, toPtr, pathPtr, prefPtr, suffPtr string
 var onefPtr, subfPtr, doyPtr, verPtr bool
 var daysPtr, dowPtr, domPtr int
 var dateStart, dateEnd time.Time
-var out io.Writer = ioutil.Discard
+var out = ioutil.Discard
 
 const debugModeActivated = false
 
 //------------------------------------------------------------------------------
 
 func main() {
-
 	flag.Usage = func() {
 		fmt.Printf("Usage: dayfolders [-year YYYY] [-from YYYY-MM-DD] " +
 			"[-to YYYY-MM-DD] [-path /your/target/dir/] [-days 1 to 366] " +
@@ -214,6 +212,10 @@ func main() {
 
 	flag.StringVar(&pathPtr, "path", ".", "Path to dir within the folders "+
 		"will be created.")
+
+	flag.StringVar(&suffPtr, "suffix", "", "Add suffix to day folder's name.")
+
+	flag.StringVar(&prefPtr, "prefix", "", "Add prefix to day folder's name.")
 
 	flag.BoolVar(&onefPtr, "one", false, "A long forlder name per "+
 		"day(eg: 2017-01-22).")
@@ -252,6 +254,8 @@ func main() {
 	fmt.Fprintln(out, "yearPtr: ", yearPtr)
 	fmt.Fprintln(out, "fromPtr: ", fromPtr)
 	fmt.Fprintln(out, "toPtr: ", toPtr)
+	fmt.Fprintln(out, "prefPtr: ", prefPtr)
+	fmt.Fprintln(out, "suffPtr: ", suffPtr)
 	fmt.Fprintln(out, "daysPtr: ", daysPtr)
 	fmt.Fprintln(out, "dowPtr: ", dowPtr)
 	fmt.Fprintln(out, "doyPtr: ", doyPtr)
@@ -262,7 +266,7 @@ func main() {
 	lc = "it_IT"
 
 	if verPtr {
-		fmt.Println("Version 1.1.0")
+		fmt.Println("Version 1.2.0")
 		os.Exit(0)
 	}
 
@@ -290,8 +294,8 @@ func main() {
 //------------------------------------------------------------------------------
 
 func validateFlags() error {
-
-	var errPeriod error = errors.New("Ambiguous period. Goodbye!")
+	var errPeriod = errors.New("ambiguous period, goodbye")
+	var PathSeparator = fmt.Sprintf("%c", os.PathSeparator)
 
 	if yearPtr == "" && fromPtr == "" && toPtr == "" {
 		return errPeriod
@@ -301,12 +305,20 @@ func validateFlags() error {
 		return errPeriod
 	}
 
+	if strings.Index(suffPtr, PathSeparator) > 0 {
+		return errors.New("suffix text contains os path separator, goodbye")
+	}
+
+	if strings.Index(prefPtr, PathSeparator) > 0 {
+		return errors.New("prefix text contains os path separator, goodbye")
+	}
+
 	if (yearPtr != "" && fromPtr != "") || (yearPtr != "" && toPtr != "") {
 		return errPeriod
 	}
 
 	if onefPtr && subfPtr {
-		return errors.New("Ambiguous style for folders. Goodbye!")
+		return errors.New("ambiguous style for folders, goodbye")
 	}
 
 	if pathPtr == "." {
@@ -318,39 +330,39 @@ func validateFlags() error {
 	} else {
 		if _, err := os.Stat(pathPtr); os.IsNotExist(err) {
 			return err // Dir doesn't exist!
-		} else {
-			pathPtr, _ = filepath.Abs(filepath.Dir(pathPtr))
 		}
+
+		pathPtr, _ = filepath.Abs(filepath.Dir(pathPtr))
 	}
 
 	if daysPtr < 0 || daysPtr > 366 {
-		return errors.New("Days between 1 and 366. Goodbye!")
+		return errors.New("days between 1 and 366, goodbye")
 	}
 
 	if dowPtr < 0 || dowPtr > 2 {
-		return errors.New("Ambiguous format for day's name. Goodbye!")
-	} else {
-		switch dowPtr {
-		case 1:
-			fdn = short
-		case 2:
-			fdn = long
-		default:
-			fdn = noname
-		}
+		return errors.New("ambiguous format for day's name, goodbye")
+	}
+
+	switch dowPtr {
+	case 1:
+		fdn = short
+	case 2:
+		fdn = long
+	default:
+		fdn = noname
 	}
 
 	if domPtr < 0 || domPtr > 2 {
-		return errors.New("Ambiguous format for month's name. Goodbye!")
-	} else {
-		switch domPtr {
-		case 1:
-			fmn = short
-		case 2:
-			fmn = long
-		default:
-			fmn = noname
-		}
+		return errors.New("ambiguous format for month's name, goodbye")
+	}
+
+	switch domPtr {
+	case 1:
+		fmn = short
+	case 2:
+		fmn = long
+	default:
+		fmn = noname
 	}
 
 	return nil
@@ -359,12 +371,12 @@ func validateFlags() error {
 //------------------------------------------------------------------------------
 
 func validatePeriod() error {
-	var errDateFormat error = errors.New("Unexpected date format. Goodbye!")
+	var errDF = errors.New("unexpected date format, goodbye")
 
 	if yearPtr != "" {
 		test, err := time.Parse("2006", yearPtr)
 		if err != nil {
-			return errDateFormat
+			return errDF
 		}
 		dateStart = test
 		if daysPtr > 0 {
@@ -377,7 +389,7 @@ func validatePeriod() error {
 	if fromPtr != "" {
 		test, err := time.Parse("2006-01-02", fromPtr)
 		if err != nil {
-			return errDateFormat
+			return errDF
 		}
 		dateStart = test
 
@@ -394,7 +406,7 @@ func validatePeriod() error {
 	if toPtr != "" {
 		test, err := time.Parse("2006-01-02", toPtr)
 		if err != nil {
-			return errDateFormat
+			return errDF
 		}
 		dateEnd = test
 
@@ -408,7 +420,7 @@ func validatePeriod() error {
 	}
 
 	if dateEnd.Before(dateStart) {
-		return errors.New("Starting date is after the final. Goodbye!")
+		return errors.New("starting date is after the final, goodbye")
 	}
 
 	return nil
@@ -429,28 +441,28 @@ func deleteEmpty(s []string) []string {
 //------------------------------------------------------------------------------
 
 func createFolders() error {
-	var dayOfYear, dayName, monthName string
-	dateCursor := dateStart
-	yearFormat := "2006"
-	monthFormat := "01"
-	dayFormat := "02"
+	var y, d, m string
+	p := dateStart
+	yf := "2006"
+	mf := "01"
+	df := "02"
 
-	for dateCursor.Before(dateEnd) || dateCursor.Equal(dateEnd) {
+	for p.Before(dateEnd) || p.Equal(dateEnd) {
 		if doyPtr {
-			dayOfYear = fmt.Sprintf("%03d", dateCursor.YearDay())
+			y = fmt.Sprintf("%03d", p.YearDay())
 		}
 
-		dayName = fmt.Sprintf("%s", DayNames[lc][fdn][dateCursor.Weekday()])
-		monthName = fmt.Sprintf("%s", MonthNames[lc][fmn][dateCursor.Month()])
+		d = fmt.Sprintf("%s", daynames[lc][fdn][p.Weekday()])
+		m = fmt.Sprintf("%s", monthNames[lc][fmn][p.Month()])
 
 		if (!onefPtr && !subfPtr) || subfPtr {
-			s := []string{dayOfYear, dateCursor.Format(dayFormat), dayName}
-			m := []string{dateCursor.Format(monthFormat), monthName}
+			s := []string{prefPtr, y, p.Format(df), d, suffPtr}
+			n := []string{p.Format(mf), m}
 			err := os.MkdirAll(
 				filepath.Join(
 					pathPtr,
-					dateCursor.Format(yearFormat),
-					strings.Join(deleteEmpty(m), "_"),
+					p.Format(yf),
+					strings.Join(deleteEmpty(n), "_"),
 					strings.Join(deleteEmpty(s), "_"),
 				), os.ModePerm)
 
@@ -458,10 +470,10 @@ func createFolders() error {
 				return err
 			}
 		} else {
-			s := []string{dateCursor.Format("2006-01-02"), dayOfYear, dayName}
+			s := []string{prefPtr, p.Format("2006-01-02"), y, d, suffPtr}
 			err := os.MkdirAll(filepath.Join(
 				pathPtr,
-				dateCursor.Format(yearFormat),
+				p.Format(yf),
 				strings.Join(deleteEmpty(s), "_"),
 			), os.ModePerm)
 
@@ -470,7 +482,7 @@ func createFolders() error {
 			}
 		}
 
-		dateCursor = dateCursor.AddDate(0, 0, 1)
+		p = p.AddDate(0, 0, 1)
 	}
 
 	return nil
