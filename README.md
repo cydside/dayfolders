@@ -66,6 +66,6 @@ The above two commands create a folder structure as follow:
 |   |   |   └──DONE
 ```
 
-* `TO DO`
+## TO DO:
 
-- Import a json file for a new language.
+* Import a json file for a new language.
