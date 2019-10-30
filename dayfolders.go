@@ -1,4 +1,4 @@
-// dayfolders is a command line tool that creates daily folders to store files in a selectable period of time.
+// dayfolders is a command line tool that creates daily folders to store files for a selectable period of time.
 // Copyright (C) 2017-2019  Danilo Cicerone
 
 // This program is free software: you can redistribute it and/or modify
