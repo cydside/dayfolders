@@ -1,7 +1,7 @@
 # dayfolders
 A tool that creates daily folders for a selectable period of time.
 
-You can add your language support, quick and easy, have a look at the source code. Enjoy!
+You can add your language support, quick and easy, have a look at the source code. Enjoy!  
 PS: Need help to add new languages (see [dailyname entities](https://github.com/cydside/dailyname/blob/master/entities.go))
 
 ## Usage examples:
