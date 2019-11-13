@@ -24,4 +24,6 @@ _testmain.go
 *.prof
 
 dayfolders
+dayfolders_*.exe
 dayfolders.exe
+main
